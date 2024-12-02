@@ -1,0 +1,59 @@
+
+
+
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Lane for iOS Firebase Distribution"
+  lane :firebase_distribution do
+    sh "flutter clean"
+    sh "flutter build ios --release --no-codesign"
+
+    # Find the generated .ipa file
+    archive_path = "../build/ios/iphoneos/Runner.app"
+    output_path = "../build/ios/Runner.ipa"
+
+    # Create .ipa from the archive
+    gym(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      clean: true,
+      output_name: "Runner.ipa",
+      export_method: "ad-hoc", # or "enterprise" if you're using an enterprise account
+      silent: false
+    )
+
+    firebase_app_distribution(
+      app: "1:1089596553584:ios:5acbe49603f8722c06b7b5", # Replace with your iOS app ID from Firebase
+      firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
+      ipa_path: "../build/ios/Runner.ipa",
+      testers: "marwansalemabdellatif@gmail.com",
+      release_notes: "First Fastlane Firebase Distribution Release"
+    )
+  end
+end
+
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+# default_platform(:ios)
+#
+# platform :ios do
+#   desc "Description of what the lane does"
+#   lane :custom_lane do
+#     # add actions here: https://docs.fastlane.tools/actions
+#   end
+# end
